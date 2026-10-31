@@ -1,6 +1,13 @@
-﻿namespace ProjetoLivraria.Repositories
+﻿using ProjetoLivraria.Models;
+
+namespace ProjetoLivraria.Repositories
 {
-    public interface ILivroRepositorio
+    public interface ILivroRepository
     {
+        void Cadastrar(LivroModel livro);
+
+        List<LivroModel> Listar();
+
+        bool IsbnExiste(string isbn);
     }
 }
