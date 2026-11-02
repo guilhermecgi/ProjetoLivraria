@@ -50,5 +50,11 @@ namespace ProjetoLivraria.Controllers
             TempData["MensagemSucesso"] = "Livro cadastrado com sucesso!";
             return RedirectToAction(nameof(Cadastrar));
         }
+
+        [HttpGet]
+        public IActionResult Listar()
+        {
+            return View(_livroRepository.Listar());
+        }
     }
 }
