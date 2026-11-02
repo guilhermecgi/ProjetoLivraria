@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using ProjetoLivraria.Models;
 using ProjetoLivraria.Repositories;
 
@@ -30,7 +31,22 @@ namespace ProjetoLivraria.Controllers
                 return View(livro);
             }
 
-            _livroRepository.Cadastrar(livro);
+            try
+            {
+                if (_livroRepository.IsbnExiste(livro.Isbn))
+                {
+                    ModelState.AddModelError(nameof(livro.Isbn), "Este ISBN já está cadastrado");
+                    return View(livro);
+                }
+
+                _livroRepository.Cadastrar(livro);
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                ModelState.AddModelError(nameof(livro.Isbn), "Este ISBN já está cadastrado");
+                return View(livro);
+            }
+
             TempData["MensagemSucesso"] = "Livro cadastrado com sucesso!";
             return RedirectToAction(nameof(Cadastrar));
         }
