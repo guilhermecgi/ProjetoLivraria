@@ -24,6 +24,8 @@ public sealed class ValorMonetarioModelBinder : IModelBinder
         }
         else
         {
+            bindingContext.ModelState.SetModelValue(bindingContext.ModelName,
+                new ValueProviderResult(valor.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
             bindingContext.Result = ModelBindingResult.Success(valor);
         }
 

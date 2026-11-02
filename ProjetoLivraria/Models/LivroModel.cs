@@ -3,6 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using Microsoft.AspNetCore.Mvc;
     using ProjetoLivraria.ModelBinders;
+    using ProjetoLivraria.Models.Validation;
 
     public class LivroModel
     {
@@ -17,6 +18,7 @@
         public string Nome { get; set; } = string.Empty;
 
         [Display(Name = "Descrição")]
+        [MaximoBytesUtf8(65535, ErrorMessage = "A descrição é muito longa. Reduza o texto e tente novamente.")]
         public string? Descricao { get; set; }
 
         [Required(ErrorMessage = "Informe o valor do livro.")]
