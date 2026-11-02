@@ -12,5 +12,17 @@ namespace ProjetoLivraria.Controllers
         {
             return View(new LivroModel());
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cadastrar([Bind("Isbn,Nome,Descricao,Valor")] LivroModel livro)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(livro);
+            }
+
+            return View(livro);
+        }
     }
 }
