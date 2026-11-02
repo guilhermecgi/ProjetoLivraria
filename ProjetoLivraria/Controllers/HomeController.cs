@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjetoLivraria.Models;
 using System.Diagnostics;
 
 namespace ProjetoLivraria.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
+            ViewBag.NomeUsuario = User.Identity?.Name;
             return View();
         }
 
@@ -16,6 +19,7 @@ namespace ProjetoLivraria.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
