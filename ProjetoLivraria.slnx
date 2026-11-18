@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="ProjetoLivraria.Tests/ProjetoLivraria.Tests.csproj" />
   <Project Path="ProjetoLivraria/ProjetoLivraria.csproj" />
 </Solution>

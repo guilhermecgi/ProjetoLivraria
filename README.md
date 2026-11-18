@@ -1,48 +1,38 @@
 # Sistema Livraria
 
-Aplicação ASP.NET Core MVC para usuários autenticados cadastrarem e consultarem livros.
+Projeto ASP.NET Core MVC (.NET 10) com autenticação por cookies, cadastro de usuários e livros em MySQL.
 
-## Tecnologias
+## Preparação
 
-- .NET 10, C#, Razor e Bootstrap já presentes no projeto.
-- MySql.Data 26.10.0 e Microsoft.Extensions.Identity.Core 10.0.14.
-- MySQL, banco `dblivraria`, repositórios existentes e autenticação por cookies.
-
-## Executar
-
-Abra o terminal na pasta que contém `ProjetoLivraria.slnx` (a subpasta `ProjetoLivraria` da pasta de trabalho `ProjectLivraria`).
-
-1. Instale o SDK .NET 10 e inicie o MySQL na porta configurada.
-2. Em uma instalação nova, execute `script.txt` no MySQL para criar `dblivraria` e as tabelas. O script preserva tabelas existentes; não é necessário recriar um banco já configurado.
-3. Configure a conexão local sem salvar credenciais no Git. A aplicação mantém a chave `ConnectionStrings:DefaultConnection`. No PowerShell, uma variável de ambiente pode substituir a configuração existente apenas na sessão:
+1. Instale o SDK .NET 10 e o MySQL.
+2. Execute `script.txt` no MySQL para criar o banco `dblivraria` e as tabelas `login` e `livro` (se ainda não existirem). O e-mail deve ser único na tabela `login`.
+3. Configure `ConnectionStrings:DefaultConnection` para o seu MySQL (servidor, porta, banco, usuário e senha). O `appsettings.json` contém os parâmetros locais do projeto original. Não publique essa senha em um repositório público. É possível substituir a conexão por uma variável de ambiente no PowerShell:
 
    ```powershell
-   $env:ConnectionStrings__DefaultConnection = Read-Host 'Informe sua conexão MySQL local' -MaskInput
+   $env:ConnectionStrings__DefaultConnection = "Server=localhost;Port=3305;Database=dblivraria;Uid=SEU_USUARIO;Pwd=SUA_SENHA;"
    ```
 
-   A conexão deve indicar servidor, porta, banco `dblivraria` e suas credenciais locais. O `appsettings.json` preexistente foi preservado.
-
-4. Restaure os pacotes e compile:
+4. Na pasta que contém `ProjetoLivraria.slnx`, execute:
 
    ```powershell
    dotnet restore
-   dotnet build --no-restore
-   dotnet test --no-build --no-restore
-   ```
-
-5. Inicie a aplicação:
-
-   ```powershell
+   dotnet build
    dotnet run --project ProjetoLivraria/ProjetoLivraria.csproj --launch-profile http
    ```
 
-6. Acesse [http://localhost:5117](http://localhost:5117). A Home exige login e redireciona para `/Conta/Login`.
-7. Entre com um usuário existente na tabela `login`. O campo `senhahash` precisa conter um hash compatível com `PasswordHasher<LoginModel>` do ASP.NET Core Identity; o campo `senha` não é usado para autenticar. O script não cria usuários e esta etapa não implementa cadastro de contas.
+5. Acesse a URL indicada no terminal e abra `/Conta/Cadastrar`. Após criar uma conta, o sistema salva `nome`, `email` e `senhahash` no MySQL e redireciona para `/Conta/Login`.
 
-Depois do login, a Home exibe seu nome e os acessos **Cadastrar Livros** e **Listar Livros**. O formulário aceita valores positivos até R$ 99.999.999,99 e duas casas decimais. A descrição é opcional e respeita a capacidade da coluna TEXT existente. A listagem usa moeda brasileira.
+## Cadastro
 
-## Verificações
+- Todos os campos são obrigatórios; exige confirmação de senha e ao menos 8 caracteres.
+- E-mails duplicados são recusados; o banco deve manter índice UNIQUE na coluna `email`.
+- A senha não é salva em texto puro: é armazenada em `senhahash` usando o mesmo `PasswordHasher<LoginModel>` do login.
+- O login autentica e leva à Home, onde é possível cadastrar e listar livros.
 
-O projeto `ProjetoLivraria.Tests` contém testes xUnit. Eles executam o MVC, as Razor Views, os cookies, os hashes de senha e a antifalsificação reais em um servidor de testes. Apenas os repositórios externos são substituídos por dados em memória. As contas e senhas desses testes são fictícias e não funcionam no banco local.
+## Observações
 
-Os testes automatizados não exigem MySQL e **não comprovam persistência no banco real**. Consulte [o roteiro de testes](docs/TESTES.md) para repetir as verificações de integração e [o relatório da implementação](docs/IMPLEMENTACAO.md) para arquivos e limitações.
+A tabela `login` original tem uma coluna `senha` opcional. O cadastro não a utiliza; só grava `senhahash`. Se seu banco existente tiver uma coluna `senha` definida como NOT NULL sem valor padrão, ajuste-a para aceitar NULL (como no `script.txt`).
+
+O ZIP original referenciava um projeto `ProjetoLivraria.Tests` que não estava incluído. A solução foi ajustada para apontar apenas para o projeto existente.
+
+Não foi possível executar compilação nem testar a conexão MySQL neste ambiente, pois não há SDK .NET nem instância MySQL disponível. Execute os comandos acima no seu computador para validar com seu banco local.

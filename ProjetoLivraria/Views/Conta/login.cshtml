@@ -1,4 +1,4 @@
-﻿@model ProjetoLivraria.Models.LoginViewModel
+@model ProjetoLivraria.Models.LoginViewModel
 
 @{
     ViewData["Title"] = "Login";
@@ -9,6 +9,11 @@
         <div class="col-md-5">
 
             <h2 class="text-center mb-4">Login - Livraria</h2>
+
+            @if (TempData["MensagemSucesso"] is string mensagem)
+            {
+                <div class="alert alert-success" role="status">@mensagem</div>
+            }
 
             <form asp-controller="Conta"
                   asp-action="Login"
@@ -55,6 +60,12 @@
 
             </form>
 
+            <p class="text-center mt-3">Não tem conta? <a asp-controller="Conta" asp-action="Cadastrar">Cadastre-se</a></p>
+
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

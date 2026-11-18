@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using ProjetoLivraria.Models;
 using ProjetoLivraria.Repositories;
 using System.Security.Claims;
@@ -19,6 +20,59 @@ namespace ProjetoLivraria.Controllers
         {
             _loginRepository = loginRepository;
             _passwordHasher = passwordHasher;
+        }
+
+        [HttpGet]
+        public IActionResult Cadastrar()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Home");
+
+            return View(new CadastroViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cadastrar(CadastroViewModel model)
+        {
+            if (User.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Home");
+
+            model.Nome = model.Nome?.Trim() ?? string.Empty;
+            model.Email = model.Email?.Trim().ToLowerInvariant() ?? string.Empty;
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                if (_loginRepository.BuscarPorEmail(model.Email) != null)
+                {
+                    ModelState.AddModelError(nameof(model.Email), "Este e-mail já está cadastrado.");
+                    return View(model);
+                }
+
+                var usuario = new LoginModel
+                {
+                    Nome = model.Nome,
+                    Email = model.Email
+                };
+                usuario.SenhaHash = _passwordHasher.HashPassword(usuario, model.Senha);
+                _loginRepository.Cadastrar(usuario);
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                ModelState.AddModelError(nameof(model.Email), "Este e-mail já está cadastrado.");
+                return View(model);
+            }
+            catch (MySqlException)
+            {
+                ModelState.AddModelError(string.Empty, "Não foi possível concluir o cadastro. Verifique a conexão com o banco e tente novamente.");
+                return View(model);
+            }
+
+            TempData["MensagemSucesso"] = "Cadastro realizado com sucesso! Faça login para continuar.";
+            return RedirectToAction(nameof(Login));
         }
 
         // Exibir tela de login
@@ -40,7 +94,16 @@ namespace ProjetoLivraria.Controllers
             }
 
             // Buscar usuário pelo e-mail
-            var usuario = _loginRepository.BuscarPorEmail(model.Email);
+            LoginModel? usuario;
+            try
+            {
+                usuario = _loginRepository.BuscarPorEmail(model.Email.Trim().ToLowerInvariant());
+            }
+            catch (MySqlException)
+            {
+                ModelState.AddModelError(string.Empty, "Não foi possível acessar o banco de dados. Tente novamente.");
+                return View(model);
+            }
 
             // Verificar se o usuário existe
             if (usuario == null)

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProjetoLivraria.Models
 {
@@ -6,11 +6,11 @@ namespace ProjetoLivraria.Models
     {
         [Required(ErrorMessage = "Informe seu e-mail.")]
         [EmailAddress(ErrorMessage = "Digite um e-mail válido.")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Informe sua senha.")]
         [DataType(DataType.Password)]
-        public string Senha { get; set; }
+        public string Senha { get; set; } = string.Empty;
     }
 }
 
