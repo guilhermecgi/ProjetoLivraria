@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,10 +23,29 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Livro" asp-action="Cadastrar">Cadastrar livro</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Livro" asp-action="Listar">Listar livros</a>
+                            </li>
+                        }
                     </ul>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Conta" asp-action="Logout" method="post" class="d-flex">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Sair</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Conta" asp-action="Login" class="btn btn-outline-primary btn-sm">Entrar</a>
+                            <a asp-controller="Conta" asp-action="Cadastrar" class="btn btn-primary btn-sm">Cadastrar</a>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

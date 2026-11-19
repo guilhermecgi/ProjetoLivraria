@@ -1,8 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Sistema Livraria";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="row justify-content-center py-4 py-md-5" aria-labelledby="titulo-home">
+    <div class="col-12 col-lg-9">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h1 id="titulo-home" class="display-5 fw-bold">Sistema Livraria</h1>
+                <p class="lead mt-3">Bem-vindo(a), @ViewBag.NomeUsuario!</p>
+                <p class="text-muted mb-0">
+                    Gerencie os livros da sua livraria de forma simples e organizada.
+                    Cadastre ISBN, nome, descrição e valor para manter seu acervo atualizado.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex mt-4">
+                    <a asp-controller="Livro" asp-action="Cadastrar" class="btn btn-primary btn-lg">
+                        Cadastrar Livros
+                    </a>
+                    <a asp-controller="Livro" asp-action="Listar" class="btn btn-outline-primary btn-lg">
+                        Listar Livros
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

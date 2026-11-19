@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using ProjetoLivraria.Models;
 
 namespace ProjetoLivraria.Repositories
@@ -9,42 +9,46 @@ namespace ProjetoLivraria.Repositories
 
         public LoginRepository(IConfiguration configuration)
         {
-            _conexao = configuration.GetConnectionString("DefaultConnection");
+            _conexao = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Configure a conexão MySQL DefaultConnection.");
         }
 
-        public LoginModel BuscarPorEmail(string email)
+        public LoginModel? BuscarPorEmail(string email)
         {
-            LoginModel usuario = null;
+            using var conexao = new MySqlConnection(_conexao);
+            conexao.Open();
 
-            using (MySqlConnection conexao = new MySqlConnection(_conexao))
+            const string sql = @"SELECT id, nome, email, senhahash
+                                 FROM login
+                                 WHERE email = @Email
+                                 LIMIT 1";
+
+            using var comando = new MySqlCommand(sql, conexao);
+            comando.Parameters.AddWithValue("@Email", email);
+            using var reader = comando.ExecuteReader();
+            if (!reader.Read()) return null;
+
+            return new LoginModel
             {
-                conexao.Open();
+                Id = reader.GetInt32("id"),
+                Nome = reader.GetString("nome"),
+                Email = reader.GetString("email"),
+                SenhaHash = reader.GetString("senhahash")
+            };
+        }
 
-                string sql = @"SELECT id, nome, email, senhahash
-                               FROM login
-                               WHERE email = @Email";
+        public void Cadastrar(LoginModel usuario)
+        {
+            using var conexao = new MySqlConnection(_conexao);
+            conexao.Open();
 
-                using (MySqlCommand comando = new MySqlCommand(sql, conexao))
-                {
-                    comando.Parameters.AddWithValue("@Email", email);
-
-                    using (MySqlDataReader reader = comando.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            usuario = new LoginModel
-                            {
-                                Id = reader.GetInt32("id"),
-                                Nome = reader.GetString("nome"),
-                                Email = reader.GetString("email"),
-                                SenhaHash = reader.GetString("senhahash")
-                            };
-                        }
-                    }
-                }
-            }
-
-            return usuario;
+            const string sql = @"INSERT INTO login (nome, email, senhahash)
+                                 VALUES (@Nome, @Email, @SenhaHash)";
+            using var comando = new MySqlCommand(sql, conexao);
+            comando.Parameters.AddWithValue("@Nome", usuario.Nome);
+            comando.Parameters.AddWithValue("@Email", usuario.Email);
+            comando.Parameters.AddWithValue("@SenhaHash", usuario.SenhaHash);
+            comando.ExecuteNonQuery();
         }
     }
 }

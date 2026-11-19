@@ -1,0 +1,48 @@
+@model IEnumerable<ProjetoLivraria.Models.LivroModel>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Livros Cadastrados";
+    var culturaBrasileira = CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<section class="py-4" aria-labelledby="titulo-listagem">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+        <h1 id="titulo-listagem" class="h2 mb-0">Livros Cadastrados</h1>
+        <a asp-controller="Livro" asp-action="Cadastrar" class="btn btn-primary">Cadastrar Livros</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="status">Nenhum livro cadastrado.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <caption>Livros disponíveis no acervo</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">ISBN</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col" class="text-end">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var livro in Model)
+                    {
+                        <tr>
+                            <td class="text-nowrap">@livro.Isbn</td>
+                            <td class="text-break">@livro.Nome</td>
+                            <td class="text-break">@(string.IsNullOrWhiteSpace(livro.Descricao) ? "Sem descrição" : livro.Descricao)</td>
+                            <td class="text-end text-nowrap">@livro.Valor.ToString("C", culturaBrasileira)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary mt-3">Voltar à Home</a>
+</section>

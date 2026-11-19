@@ -1,0 +1,56 @@
+@model ProjetoLivraria.Models.LivroModel
+
+@{
+    ViewData["Title"] = "Cadastrar Livro";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h2 mb-4">Cadastrar Livro</h1>
+
+                @if (TempData["MensagemSucesso"] is string mensagem)
+                {
+                    <div class="alert alert-success" role="status">@mensagem</div>
+                }
+
+                <form asp-controller="Livro" asp-action="Cadastrar" method="post" asp-antiforgery="true">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-5">
+                            <label asp-for="Isbn" class="form-label">ISBN</label>
+                            <input asp-for="Isbn" class="form-control" maxlength="20" />
+                            <span asp-validation-for="Isbn" class="text-danger"></span>
+                        </div>
+                        <div class="col-12 col-md-7">
+                            <label asp-for="Nome" class="form-label">Nome</label>
+                            <input asp-for="Nome" class="form-control" maxlength="150" />
+                            <span asp-validation-for="Nome" class="text-danger"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Descricao" class="form-label">Descrição (opcional)</label>
+                            <textarea asp-for="Descricao" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Descricao" class="text-danger"></span>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <label asp-for="Valor" class="form-label">Valor (R$)</label>
+                            <input asp-for="Valor" type="number" min="0.01" max="99999999.99" step="0.01" class="form-control" inputmode="decimal" />
+                            <span asp-validation-for="Valor" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-sm-flex mt-4">
+                        <button type="submit" class="btn btn-primary">Salvar Livro</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
